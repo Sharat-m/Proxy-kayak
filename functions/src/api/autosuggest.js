@@ -6,16 +6,11 @@ autoRouter.post("/search", async (req, res) => {
   try {
     const { where } = req.query;
     // console.log(where);
+    const autoJson = require("../data/places.json");
 
-    const targetUrl = `https://www.kayak.com/mvm/smartyv2/search?where=${encodeURIComponent(
-      where
-    )}`;
-    // const autoJson = require("../data/places.json");
-    // console.log("Filtered results:", autoJson);
-
-    const response = await axios.get(targetUrl);
-    // res.json({ places: autoJson });
-    res.json(response.data);
+let results = autoJson.filter((place) => where ? place.smartyDisplay.toLowerCase().includes(where.toLowerCase()) : true ).slice(0, 6)
+// console.log(results);
+res.json({results})
   } catch (error) {
     console.log("error:", error);
 
