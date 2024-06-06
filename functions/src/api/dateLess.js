@@ -37,15 +37,16 @@ dateLessRouter.get(
       if (adultsNum < 1) {
         return { error: true, message: "There must be at least 1 adult" };
       }
-      if (childrenNum > adultsNum) {
-        return {
-          error: true,
-          message: "Number of children cannot exceed number of adults",
-        };
-      }
       if (roomsNum < 1) {
         return { error: true, message: "There must be at least 1 room" };
       }
+      // if (childrenNum > adultsNum) {
+      //   return {
+      //     error: true,
+      //     message: "Number of children cannot exceed number of adults",
+      //   };
+      // }
+     
       if (roomsNum > 8) {
         return { error: true, message: "Too many rooms; maximum is 8" };
       }
@@ -53,8 +54,7 @@ dateLessRouter.get(
       if (adultsNum < roomsNum) {
         return { error: true, message: "For 1 room 1 adult is required" };
       }
-
-      const totalGuests = adultsNum + childrenNum;
+      const totalGuests = adultsNum + childrenNum ;
       if (totalGuests > 4 * roomsNum) {
         return {
           error: true,
@@ -83,6 +83,7 @@ dateLessRouter.get(
         message: "Dateless hotel results fetched successfully",
       });
       // const redirect = `https://search.farefirst.com/hotels?=1&adults=2&checkIn=2024-09-05&checkOut=2024-09-06&children=&cityId=25772&currency=inr&destination=Mangalore&language=en&marker=83436.Zza63706ae2d904772b505cb28-83436`
+      // const redirect = `https://www.kayak.com/Mangalore-Hotels.27179.hotel.ksp'
       // res.redirect(redirect);
     } catch (error) {
     //   console.log(error);

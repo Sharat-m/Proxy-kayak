@@ -53,27 +53,34 @@ const regex =
     children = Number(children);
     rooms = Number(rooms);
 
+
+    if (rooms < 1) {
+      return {error:true, message:"There must be at least 1 room"}
+     }
+
     if (adults < 1) {
       return {error:true, message:"There must be at least 1 adult"}
     }
 
-    if (adults > 4 * rooms) {
-     return {error:true, message:"Too many adults for the number of rooms"}
-    }
+    // if (adults > 4 * rooms) {
+    //  return {error:true, message:"Too many adults for the number of rooms"}
+    // }
 
-    if (children > adults) {
-     return {error:true, message:"Number of children cannot exceed number of adults"}
-    }
 
-    if (rooms < 1) {
-     return {error:true, message:"There must be at least 1 room"}
-    }
+    // if (children > adults) {
+    //  return {error:true, message:"Number of children cannot exceed number of adults"}
+    // }
+   
 
     if (rooms > 8) {
      return {error:true, message:"Too many rooms; maximum is 8"}
     }
+    if (adults < rooms) {
+      return { error: true, message: "For 1 room 1 adult is required" };
+    }
 
-    if (adults + children > 4 * rooms) {
+    const totalGuests = adults + children;
+    if (totalGuests > 4 * rooms) {
      return {error:true, message:
         "Total number of guests (adults + children) exceeds the limit per room"
     }
@@ -92,7 +99,14 @@ const regex =
     
   try {
     // Return success response
-    res.json({ message: "Parameters are valid!", params });
+    res.json({
+      cityDetails,
+      countryState,
+      adults: adults,
+      children: children,
+      rooms: rooms,
+      message: "Successfully redirected to the kayak web page",
+    });
     // const redirectUrl = `https://www.farefirst.com/about`;
     // const redirectUrl = `https://search.farefirst.com/hotels?=1&adults=2&checkIn=2024-09-05&checkOut=2024-09-06&children=&cityId=25772&currency=inr&destination=Mangalore&language=en&marker=83436.Zza63706ae2d904772b505cb28-83436`;
 
