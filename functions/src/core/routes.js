@@ -2,14 +2,16 @@ const express = require("express");
 
 const router = express.Router();
 
-const getRouter = require("../api/urlapi");
+const hotelUrlRouter = require("../api/hotelUrl.js");
 const autoRouter = require("../api/autosuggest");
-const dateLessRouter = require("../api/dateLess");
+const dateLessHotelRouter = require("../api/hotelDateLess");
 const filterRouter = require("../api/filterApi");
+const dateLessCarRouter = require("../api/carDateless.js");
 
-router.use("/", getRouter);
+router.use("/", hotelUrlRouter);
 router.use("/", autoRouter);
-router.use("/", dateLessRouter);
+router.use("/", dateLessHotelRouter);
 router.use("/", filterRouter);
+router.use("/", dateLessCarRouter);
 
 module.exports = router;

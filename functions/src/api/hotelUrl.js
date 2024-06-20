@@ -1,16 +1,39 @@
 const express = require("express");
-const filterRouter = express.Router();
+const hotelUrlRouter = express.Router();
 
 //regex to handle the guests and rooms
-//Const url=/hotels/{City_Details},{Country/State}/{Check-In_Date}/{Check-Out_Date}/{Number_ Adults}/{Number_children}/{Number_rooms}
-const urlPattern =  /^\/hotels\/([^\/]+),([^\/]+)\/(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})(?:\/(\d+)adults)?(?:\/(\d+)children)?(?:\/(\d+)rooms)?(?:;[^?]+)?(?:\?.+)?(\?fs=.*)?$/
+//url=/hotels/{City_Details},{Country/State}/{Check-In_Date}/{Check-Out_Date}/{Number_ Adults}/{Number_children}/{Number_rooms}
+const regex =
+  /^\/hotels\/([^\/]+),([^\/]+)\/(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})(?:\/(\d+)adults)?(?:\/(\d+)children)?(?:\/(\d+)rooms)?(?:;[^?]+)?(?:\?.+)?/;
 
+hotelUrlRouter.get("/in", (req, res) => {
+  const { a: affiliateid, enc_pid, url } = req.query;
+  // let original_url =req.originalUrl;
+  // console.log(original_url);
 
+  //Checking the affiliate ID is present or not in the URL
+  if (!affiliateid || affiliateid !== "farefirst123"){
+    return res.status(400).json({
+      error: "Affiliated id is missing or not proper",
+    });
+  }
 
+  // Checking the enc pid is present or not in the url
+  if (!enc_pid || enc_pid !== "deeplinks") {
+    return res.status(400).json({
+      error: "Production id is missing or not proper",
+    });
+  }
 
-filterRouter.get('/filter', (req, res) => {
-  const { a: affiliateid, url } = req.query;
-  const match = url.match(urlPattern);
+  // checking the url is present or not
+  if (!url) {
+    return res.status(400).json({
+      error: "Url is missing",
+    });
+  }
+
+  //checking the url formate is matching or not
+  const match = url.match(regex);
   //chek the url is valid or not
   if (!match) {
     return res.status(400).json({ error: "Invalid URL format" });
@@ -23,18 +46,23 @@ filterRouter.get('/filter', (req, res) => {
     checkIn,
     checkOut,
     adults = "1",
+    children = "0",
+    rooms = "1",
   ] = match;
-  let children = "0";
-    let rooms = "1";
-
-
-
+  //   return {
+  //     cityDetails,
+  //     countryState,
+  //     checkIn,
+  //     checkOut,
+  //     guests: { adults, children, rooms },
+  //   };
+  // }
 
   const checkInDate = new Date(checkIn);
   const checkOutDate = new Date(checkOut);
 
-  // Function to check if the date is in the past
-  function validateParameters(checkInDate, checkOutDate, adults, children, rooms) {
+  // Function is used to check if the date is in the past
+  function validateParameters(checkInDate, checkOutDate) {
     let isPastDate = (checkIn) =>
       new Date(checkIn) < new Date().setHours(0, 0, 0, 0);
     //validating the checkin date and checkout date
@@ -71,7 +99,7 @@ filterRouter.get('/filter', (req, res) => {
     // }
 
     if (rooms > 8) {
-      return { error: true, message: "Too many rooms; maximum is 8" };
+      return { error: true, message: "The maximum room is 8" };
     }
     if (adults < rooms) {
       return { error: true, message: "For 1 room 1 adult is required" };
@@ -88,7 +116,7 @@ filterRouter.get('/filter', (req, res) => {
     return { errror: false };
   }
 
-  let validationResponse = validateParameters(checkInDate, checkOutDate, adults, children, rooms);
+  let validationResponse = validateParameters(checkInDate, checkOutDate);
   if (validationResponse.error) {
     return res.status(400).json({
       code: 400,
@@ -97,36 +125,16 @@ filterRouter.get('/filter', (req, res) => {
     });
   }
 
-
-  const queryParams = req.query.fs;
-
-  // Parse query parameters if they exist
-  let amenities, freebies, ambiance;
-  if (queryParams) {
-    const params = queryParams.split(';');
-    params.forEach(param => {
-      const [key, value] = param.split('=');
-      if (key === 'amenities') amenities = value;
-      if (key === 'freebies') freebies = value;
-      if (key === 'ambiance') ambiance = value;
-    });
-  }
-
   try {
     // Return success response
     res.json({
       cityDetails,
       countryState,
-      checkIn,
-      checkOut,
-      adults,
-      children,
-      rooms,
-      amenities,
-      freebies,
-      ambiance,
-      message: "Filter API is successfully redirected to the kayak web page",
-  });
+      adults: adults,
+      children: children,
+      rooms: rooms,
+      message: "Web Url is Successfully redirected to the kayak web page",
+    });
     // const redirectUrl = `https://www.farefirst.com/about`;
     // const redirectUrl = `https://search.farefirst.com/hotels?=1&adults=2&checkIn=2024-09-05&checkOut=2024-09-06&children=&cityId=25772&currency=inr&destination=Mangalore&language=en&marker=83436.Zza63706ae2d904772b505cb28-83436`;
 
@@ -138,4 +146,4 @@ filterRouter.get('/filter', (req, res) => {
       .send({ status: "Failed", message: "Internal Server Error" });
   }
 });
-module.exports = filterRouter;
+module.exports = hotelUrlRouter;
