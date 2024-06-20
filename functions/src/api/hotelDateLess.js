@@ -8,11 +8,34 @@ const urlPattern =
   /^\/hotels-dateless\/([^\/]+),([^\/]+)(\/(\d+)adults(\/(\d+)children(\/(\d+)rooms)?)?)?$/;
 
 // Routes
-dateLessHotelRouter.get("/hotelin", (req, res) => {
-  const { a: affiliateid, url } = req.query;
+dateLessHotelRouter.get("/hotel-in", (req, res) => {
+  const { a: affiliateid, enc_pid, url } = req.query;
+  // console.log(url);
   // const urlPattern = req.originalUrl;
-  const match = url.match(urlPattern);
 
+  //Checking the affiliate ID is present or not in the URL
+  if (!affiliateid || affiliateid !== "farefirst123") {
+    return res.status(400).json({
+      error: "Affiliated id is missing or not proper",
+    });
+  }
+
+  // Checking the enc pid is present or not in the url
+  if (!enc_pid || enc_pid !== "deeplinks") {
+    return res.status(400).json({
+      error: "Production id is missing or not proper",
+    });
+  }
+
+  // checking the url is present or not
+  if (!url) {
+    return res.status(400).json({
+      error: "Url is missing",
+    });
+  }
+
+  //checking the url formate is matching or not
+  const match = url.match(urlPattern);
   //chek the url is valid or not
   if (!match) {
     return res.status(400).json({ error: "Invalid URL format" });
@@ -49,7 +72,7 @@ dateLessHotelRouter.get("/hotelin", (req, res) => {
     // }
 
     if (roomsNum > 8) {
-      return { error: true, message: "Too many rooms; maximum is 8" };
+      return { error: true, message: "The maximum room is 8" };
     }
 
     if (adultsNum < roomsNum) {
@@ -59,7 +82,8 @@ dateLessHotelRouter.get("/hotelin", (req, res) => {
     if (totalGuests > 4 * roomsNum) {
       return {
         error: true,
-        message: "Too many TotalGuests more than rooms",
+        message:
+          "Total number of guests (adults + children) exceeds the limit per room",
       };
     }
     return { errror: false };

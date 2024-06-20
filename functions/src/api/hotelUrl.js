@@ -12,7 +12,7 @@ hotelUrlRouter.get("/in", (req, res) => {
   // console.log(original_url);
 
   //Checking the affiliate ID is present or not in the URL
-  if (!affiliateid || affiliateid !== "farefirst123"){
+  if (!affiliateid || affiliateid !== "farefirst123") {
     return res.status(400).json({
       error: "Affiliated id is missing or not proper",
     });
@@ -137,7 +137,6 @@ hotelUrlRouter.get("/in", (req, res) => {
     });
     // const redirectUrl = `https://www.farefirst.com/about`;
     // const redirectUrl = `https://search.farefirst.com/hotels?=1&adults=2&checkIn=2024-09-05&checkOut=2024-09-06&children=&cityId=25772&currency=inr&destination=Mangalore&language=en&marker=83436.Zza63706ae2d904772b505cb28-83436`;
-
     // res.redirect(redirectUrl);
   } catch (error) {
     console.log(error);
