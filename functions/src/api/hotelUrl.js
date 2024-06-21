@@ -129,13 +129,7 @@ hotelUrlRouter.get("/in", (req, res) => {
     // Return success response
     res.json({
       original_url,
-      cityDetails,
-      countryState,
-      adults: adults,
-      children: children,
-      rooms: rooms,
-      message: "Web Url is Successfully redirected to the kayak web page",
-      
+      // message: "Web Url is Successfully redirected to the kayak web page",
     });
     // const redirectUrl = `https://www.farefirst.com/about`;
     // const redirectUrl = `https://search.farefirst.com/hotels?=1&adults=2&checkIn=2024-09-05&checkOut=2024-09-06&children=&cityId=25772&currency=inr&destination=Mangalore&language=en&marker=83436.Zza63706ae2d904772b505cb28-83436`;
