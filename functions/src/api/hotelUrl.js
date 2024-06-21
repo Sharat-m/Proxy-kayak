@@ -8,7 +8,7 @@ const regex =
 
 hotelUrlRouter.get("/in", (req, res) => {
   const { a: affiliateid, enc_pid, url } = req.query;
-  // let original_url =req.originalUrl;
+  let original_url =req.originalUrl;
   // console.log(original_url);
 
   //Checking the affiliate ID is present or not in the URL
@@ -128,12 +128,14 @@ hotelUrlRouter.get("/in", (req, res) => {
   try {
     // Return success response
     res.json({
+      original_url,
       cityDetails,
       countryState,
       adults: adults,
       children: children,
       rooms: rooms,
       message: "Web Url is Successfully redirected to the kayak web page",
+      
     });
     // const redirectUrl = `https://www.farefirst.com/about`;
     // const redirectUrl = `https://search.farefirst.com/hotels?=1&adults=2&checkIn=2024-09-05&checkOut=2024-09-06&children=&cityId=25772&currency=inr&destination=Mangalore&language=en&marker=83436.Zza63706ae2d904772b505cb28-83436`;
