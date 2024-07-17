@@ -1,10 +1,11 @@
 const express = require("express");
 const carUrlRouter = express.Router();
 
+// https://www.kayak.com/cars/Mangalore,Karnataka,India-c27179/Bengaluru,Karnataka,India-c14559/2024-07-24-14h/2024-07-26-15h?sort=rank_a
 const regex =
   /^\/cars\/([^\/]+)\/(?:([^\/]+)\/)?(\d{4}-\d{2}-\d{2}(?:-\d{2}h)?)\/(\d{4}-\d{2}-\d{2}(?:-\d{2}h)?)\/?$/;
 
-carUrlRouter.get("/car", (req, res) => {
+carUrlRouter.get("/cars", (req, res) => {
   const { a: affiliateid, enc_pid, url } = req.query;
   let original_url = req.originalUrl;
 
@@ -60,21 +61,21 @@ carUrlRouter.get("/car", (req, res) => {
 }
 
   const pickUpDate = parseDateWithOptionalTime(pickUpDateHour);
-  // console.log("pickUpDate:", pickUpDate);
+  console.log("pickUpDate:", pickUpDate);
   const dropOffDate = parseDateWithOptionalTime(dropOffDateHour);
-  // console.log("dropOffDate:", dropOffDate);
+  console.log("dropOffDate:", dropOffDate);
   // const pickUpDate = new Date(pickUpdate);
   // const dropOffDate = new Date(dropOffdate);
 
   // Function to check if the date is in the past
   function isPastDate(date) {
     // return new Date(date) < new Date().setHours(0, 0, 0, 0);
-    // console.log(date );
-    // console.log(new Date());
-    // console.log(date < new Date());
+    console.log(date );
+    console.log(new Date());
+    console.log(date < new Date());
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    // console.log("Today's date:", today);
+    // today.setHours(0, 0, 0, 0);
+    console.log("Today's date:", today);
     return date < today;
   }
 

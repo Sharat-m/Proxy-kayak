@@ -8,7 +8,7 @@ const urlPattern = /^\/car-dateless\/([^\/]+)/;
 // Routes
 dateLessCarRouter.get("/carin", (req, res) => {
   const { a: affiliateid, enc_pid, url } = req.query;
-  // let original_url =req.originalUrl;
+  let original_url =req.originalUrl;
   // console.log(original_url);
 
   if (!affiliateid || affiliateid !== "farefirst123")
@@ -39,8 +39,9 @@ dateLessCarRouter.get("/carin", (req, res) => {
   // validation
   try {
     res.json({
-      cityID,
-      message: "Dateless car results fetched successfully",
+      // cityID,
+      // message: "Dateless car results fetched successfully",
+      original_url
     });
     // const redirect = `https://www.kayak.com/cars/Los-Angeles%2CCA/SFO/2024-12-02/2024-12-05/?sort=distance_a`
     // res.redirect(redirect);

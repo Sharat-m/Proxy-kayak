@@ -3,8 +3,16 @@ const hotelUrlRouter = express.Router();
 
 //regex to handle the guests and rooms
 //url=/hotels/{City_Details},{Country/State}/{Check-In_Date}/{Check-Out_Date}/{Number_ Adults}/{Number_children}/{Number_rooms}
-const regex =
-  /^\/hotels\/([^\/]+),([^\/]+)\/(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})(?:\/(\d+)adults)?(?:\/(\d+)children)?(?:\/(\d+)rooms)?(?:;[^?]+)?(?:\?.+)?/;
+// const regex =/^\/hotels\/([^\/]+),([^\/]+)\/(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})(?:\/(\d+)adults)?(?:\/(\d+)children)?(?:\/(\d+)rooms)?(?:;[^?]+)?(?:\?.+)?/;
+  const regex = /^\/hotels\/([^\/]+),([^\/]+)\/(\d{4}-\d{2}-\d{2})\/(\d{4}-\d{2}-\d{2})(?:\/(\d+)adults)?(?:\/(\d+)children)?(?:\/(\d+)rooms)?(?:;[^?]+)?(?:\?.+)?(\?fs=.*)?$/;
+
+  //validating the filter property type
+  const validPropertyTypes = [
+    "apthotel", "bb", "capsulehotel", "guesthouse", "hostel", 
+    "hotel", "inn", "motel", "pension", "rental", 
+    "resort", "riad", "ryokan"
+  ];
+
 
 hotelUrlRouter.get("/in", (req, res) => {
   const { a: affiliateid, enc_pid, url } = req.query;
@@ -49,14 +57,6 @@ hotelUrlRouter.get("/in", (req, res) => {
     children = "0",
     rooms = "1",
   ] = match;
-  //   return {
-  //     cityDetails,
-  //     countryState,
-  //     checkIn,
-  //     checkOut,
-  //     guests: { adults, children, rooms },
-  //   };
-  // }
 
   const checkInDate = new Date(checkIn);
   const checkOutDate = new Date(checkOut);
@@ -116,13 +116,52 @@ hotelUrlRouter.get("/in", (req, res) => {
     return { errror: false };
   }
 
-  let validationResponse = validateParameters(checkInDate, checkOutDate);
+  let validationResponse = validateParameters(checkInDate, checkOutDate, adults, children, rooms);
   if (validationResponse.error) {
     return res.status(400).json({
       code: 400,
       message: validationResponse.message,
       details: [],
     });
+  }
+
+  const queryParams = req.query.fs;
+
+  // Parse query parameters if they exist
+  let amenities, freebies, ambiance, propertyType;
+  if (queryParams) {
+    const params = queryParams.split(';');
+    params.forEach(param => {
+      const [key, value] = param.split('=');
+      if (key === 'amenities') amenities = value;
+      if (key === 'freebies') freebies = value;
+      if (key === 'ambiance') ambiance = value;
+      if (key === 'property-type') propertyType = value;
+    });
+  }
+
+  // Validate filter parameters
+  if (queryParams) {
+    if (propertyType) {
+      // Split the property types by ',' and validate each type
+      const propertyTypes = propertyType.split(',');
+      for (let type of propertyTypes) {
+        const individualTypes = type.split(':');
+        for (let individualType of individualTypes) {
+          if (!validPropertyTypes.includes(individualType)) {
+            return res.status(400).json({
+              error: "Invalid property type",
+            });
+          }
+        }
+      }
+    }
+
+    if (!amenities && !freebies && !ambiance && !propertyType) {
+      return res.status(400).json({
+        error: "Invalid filter parameters",
+      });
+    }
   }
 
   try {
